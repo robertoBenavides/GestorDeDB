@@ -1,0 +1,1 @@
+Peruanos/5/[DNI/int,nombre/char/20,apellido/char/20,edad/int,fecha_nac/date]
