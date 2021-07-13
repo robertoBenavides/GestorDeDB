@@ -41,6 +41,20 @@ void insertMasivo(int n, string nombreTabla) {
     }
 }
 
+void insertMasivo2(int n, string nombreTabla) {
+    for (int i = 0; i < n; i++)
+    {
+        string id = to_string(11111111 + (rand() % 1111111));
+        string edad = to_string(rand() % 100 + 1);
+        string dia = to_string(rand() % 31 + 1);
+        string mes = to_string(rand() % 12 + 1);
+        string anio = to_string(rand() % 21 + 1970);
+        string fecha = dia + "-" + mes + "-" + anio;
+        string linea = nombreTabla + "(" + id + ", Nombre-" + id + ", Apellido-" + id + ", " + edad + ", " + fecha + ")";
+        TM.insertValue(linea);
+    }
+}
+
 void run() {
     string comando = readComand();
     size_t pos = comando.find(" ");
@@ -78,6 +92,12 @@ void run() {
     if (ident == "delete") {
         TM.deleteValue(value);
     }
+    if (ident == "index") {
+        TM.indexTable(value);
+
+
+
+    }
     if (ident == "select") {
         pos = value.find("from");
         if (pos != string::npos) {
@@ -88,14 +108,15 @@ void run() {
         }
 
     }
-     if (!executed) {
+    /* if (!executed) {
          TM.print("comando incorrecto",rojo);
      }
 }
 
 int main()
 {
-    bool running = true;
+    cout<<VS.validate("update    persona    set id = 3,nombre=asdasdf where     id     =     1   ;");
+    /*bool running = true;
     while (running) {
         run(); 
     }
