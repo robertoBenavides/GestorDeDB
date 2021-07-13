@@ -356,6 +356,20 @@ void TableManager::updateValue(string value)
     }
 }
 
+void TableManager::indexTable(string value)
+{
+    int pos = value.find(" ");
+    string indexname = string(value.begin(), value.begin() + pos);
+    value.erase(value.begin(), value.begin() + pos + 4);
+    pos = value.find(".");
+    string tablename = string(value.begin(), value.begin() + pos);
+    value.erase(value.begin(), value.begin() + pos+1);
+    pos = value.find(";");
+    string atributo = string(value.begin(), value.begin() + pos);
+    cout << indexname << " - " << tablename << " - " << atributo;
+
+}
+
 vector<vector<string>> TableManager::getall(string tablename)
 {
     fstream file;
