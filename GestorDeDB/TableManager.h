@@ -28,6 +28,7 @@ struct TableManager
     void updateValue(string);
     void deleteValue(string);
     void select(string, string);
+    void indexTable(string);
 
 
     //helper functions
