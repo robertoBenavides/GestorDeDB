@@ -41,7 +41,6 @@ void insertMasivo(int n, string nombreTabla) {
     }
 }
 
-
 void run() {
     string comando = readComand();
     size_t pos = comando.find(" ");
@@ -78,9 +77,6 @@ void run() {
     }
     if (ident == "delete") {
         TM.deleteValue(value);
-
-
-
     }
     if (ident == "select") {
         pos = value.find("from");
@@ -92,15 +88,15 @@ void run() {
         }
 
     }
-    /* if (!executed) {
+     if (!executed) {
          TM.print("comando incorrecto",rojo);
-     }*/
+     }
 }
+
 int main()
 {
-    cout<<VS.validate("update    persona    set id = 3,nombre=asdasdf where     id     =     1   ;");
-    /*bool running = true;
+    bool running = true;
     while (running) {
         run(); 
-    }*/
+    }
 }
