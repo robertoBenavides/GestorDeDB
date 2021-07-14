@@ -21,7 +21,7 @@ string readComand() {
     string comando=" ";
     string line;
     do {
-        getline(cin, line);
+        getline(cin, line); 
         comando += line;
     } while (comando[comando.size() - 1] != ';');
     return SA.trim(comando);
@@ -117,7 +117,7 @@ void run() {
 }
 int main()
 {
-    //insertMasivo2(30000, "Estudiante");
+    //insertMasivo2(30000, "Estudiante_30000");
     bool running = true;
     while (running) {
         run(); 
