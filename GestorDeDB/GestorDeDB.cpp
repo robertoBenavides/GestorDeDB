@@ -7,12 +7,10 @@
 #include "Fecha.h"
 #include "StringAdapter.h"
 #include "TableManager.h"
-#include "VAlidatorsintax.h"
 
 using namespace std;
 StringAdapter SA;
 TableManager TM;
-VAlidatorsintax VS;
 
 string readComand() {
     string comando=" ";
@@ -58,6 +56,10 @@ void run() {
     string ident = string(comando.begin(), comando.begin() + pos);
     string value = string(comando.begin() + pos + 1, comando.end());
     bool executed = false;
+    if (ident == "create_index") {
+        executed = true;
+        TM.indexTable(value);
+    }
     if (ident == "create") {
         pos = value.find(" ");
         size_t pospar = value.find("(");
@@ -89,12 +91,6 @@ void run() {
     if (ident == "delete") {
         TM.deleteValue(value);
     }
-    if (ident == "index") {
-        TM.indexTable(value);
-
-
-
-    }
     if (ident == "select") {
         pos = value.find("from");
         if (pos != string::npos) {
@@ -109,9 +105,7 @@ void run() {
          TM.print("comando incorrecto",rojo);
      }
 }
-#include "Indice.h"
-#include "ArbolAVL.h"
-#include "Nodo.h"
+
 int main()
 {
     //insertMasivo2(30000, "Estudiante_30000");

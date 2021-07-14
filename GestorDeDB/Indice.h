@@ -2,26 +2,24 @@
 #include <vector>
 #include <string>
 using namespace std;
-class Indice
+struct Indice
 {
-	string val;
-	vector<int> lineas;
-
-	
-
-public:
-	Indice(string val, vector<int> l) {
-		this->val = val;
-		this->lineas = l;
+	string nombre;
+	string campo;
+	string tipo;
+	string tablename;
+	int colnumber;
+	Indice() {}
+	Indice(string nombre,string campo, string tipo,string tablename,int colnumber) {
+		this->nombre= nombre;
+		this->tipo=tipo;
+		this->campo = campo;
+		this->tablename = tablename;
+		this->colnumber = colnumber;
 	}
+
 	string toString() {
-		string a= val + ",[";
-		for (int l : lineas) {
-			a += to_string(l) + ",";
-		}
-		a[a.size() - 1] = ']';
-		return a;
+		return nombre + "," + campo + "," + tipo;
 	}
 
 };
-

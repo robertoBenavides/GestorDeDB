@@ -5,6 +5,9 @@
 #include "StringAdapter.h"
 #include "Tabla.h"
 #include "Fecha.h"
+#include "Indice.h"
+#include "ArbolAVL.h"
+
 #define rojo 4
 #define verde 2
 #define blanco 15
@@ -15,7 +18,9 @@ struct TableManager
 {
     vector<Tabla> tablas;
     StringAdapter SA;
-
+    vector<Indice> indices;
+    vector<ArbolAVL<string>> indxTrees;
+    
     TableManager();
     
     bool tableexist(string, Tabla*& );
@@ -28,7 +33,10 @@ struct TableManager
     void updateValue(string);
     void deleteValue(string);
     void select(string, string);
+
+    //index methods
     void indexTable(string);
+    void getArbol(string, ArbolAVL<string>*);
 
 
     //helper functions
