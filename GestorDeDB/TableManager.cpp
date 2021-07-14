@@ -124,7 +124,14 @@ void TableManager::insertValue(string val)
                         finalvalues += SA.fixCadsize(SA.trim(valores[i]), stoi(tb.colums[i].tamanio));
                     }
                     else {
-                        finalvalues += SA.trim(valores[i]);
+                        vector<string> fecha = SA.split(SA.trim(valores[i]), "-");
+                        if (fecha[0].size() == 1) {
+                            fecha[0] = "0" + fecha[0];
+                        }
+                        if (fecha[1].size() == 1) {
+                            fecha[1] = "0" + fecha[1];
+                        }
+                        finalvalues += fecha[0]+"-"+ fecha[1] + "-"+fecha[2];
                     }
                     finalvalues += ",";
                 }
@@ -365,8 +372,15 @@ void TableManager::indexTable(string value)
     value.erase(value.begin(), value.begin() + pos+1);
     pos = value.find(";");
     string atributo = string(value.begin(), value.begin() + pos);
-    cout << indexname << " - " << tablename << " - " << atributo;
-
+    Tabla* t;
+    if (tableexist(tablename, t)) {
+        Tabla tb = *t;
+        vector<vector<string>>data = getall(tablename);
+        int colnumcond = getIndexColum(tb.colums, atributo);
+        for (int i = 0; i < data.size(); i++) {
+            cout << i << " " << data[i][colnumcond]<<endl;
+        }
+    }
 }
 
 vector<vector<string>> TableManager::getall(string tablename)

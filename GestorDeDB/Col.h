@@ -10,7 +10,13 @@ struct Col
     Col(string n, string t, string tam = "0") {
         nombre = n;
         tipo = t;
-        tamanio = tam;
+        if (tipo == "int") {
+            tamanio = "10";
+        }
+        else {
+            tamanio = tam;
+        }
+        
     }
     string toString() {
         string del = "/";
