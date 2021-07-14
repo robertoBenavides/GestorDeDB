@@ -19,7 +19,7 @@ struct Indice
 	}
 
 	string toString() {
-		return nombre + "," + campo + "," + tipo;
+		return nombre + "," + campo + "," + tipo+","+tablename+","+to_string(colnumber);
 	}
 
 };

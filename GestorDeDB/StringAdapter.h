@@ -18,10 +18,11 @@ struct StringAdapter
 
     }
     string trim(string texto) {
-        string::iterator ini = texto.begin(), fin = texto.end() - 1;
+        string::iterator ini = texto.begin(), fin = texto.end()-1;
         while (*ini == ' ')ini++;
         while (*fin == ' ')fin--;
-        return string(ini, fin + 1);
+        fin++;
+        return string(ini, fin);
     }
 
     vector<string> toFlatString(vector<vector<string>> data, string del = ",") {

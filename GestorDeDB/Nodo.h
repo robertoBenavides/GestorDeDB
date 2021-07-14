@@ -22,7 +22,7 @@ struct Nodo {
 		lineas = l;
 	}
 	string toString() {
-		string a = val + ",[";
+		string a = val + "\/[";
 		for (int l : lineas) {
 			a += to_string(l) + ",";
 		}

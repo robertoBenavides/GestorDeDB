@@ -1,0 +1,1 @@
+idx_30000,id_est,int,Estudiante_30000_idx,0

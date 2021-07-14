@@ -44,7 +44,19 @@ TableManager::TableManager()
     }
 
     //generating trees
-
+    for (Indice i : indices) {
+        ifstream arbolmyfile(i.nombre+".txt");
+        string arbolline;
+        if (indxmyfile.is_open())
+        {
+            while (getline(indxmyfile, indxline))
+            {
+                vector<string> valores = SA.split(arbolline, ",");
+                indices.push_back(Indice(valores[0], valores[1], valores[2], valores[3], stoi(valores[4])));
+            }
+            indxmyfile.close();
+        }
+    }
 
 }
 bool TableManager::tableexist(string tbname, Tabla*& a)
@@ -193,6 +205,28 @@ void TableManager::getArbol(string tname, ArbolAVL<string>* ind) {
     }
 }
 
+bool TableManager::indexexist(string indexname)
+{
+    for (Indice ind : indices) {
+        if (ind.nombre == indexname) {
+            return true;
+        }
+    }
+    return false;
+}
+
+void TableManager::saveIndex(Indice i)
+{
+    ofstream f("Indices.txt", ios::app);
+    if (f.is_open()) {
+        f << i.toString();
+        f << "\n";
+        f.close();
+    }
+    else  cout << "Error de apertura de archivo." << endl;
+
+}
+
 void TableManager::deleteValue(string value)
 {
     int pos = value.find(" ");
@@ -249,6 +283,8 @@ void TableManager::deleteValue(string value)
 
 void TableManager::select(string value, string campos)
 {
+    auto start = std::chrono::system_clock::now();
+   
     string tablename = SA.trim(string(value.begin(), value.end() - 1));
     int pos = value.find("where");
     string condicional;
@@ -270,8 +306,6 @@ void TableManager::select(string value, string campos)
 
         cond = SA.split(SA.trim(string(value.begin(), value.end() - 1)), condicional);
     }
-
-
     Tabla* t;
     if (tableexist(tablename, t)) {
         Tabla tb = *t;
@@ -286,6 +320,10 @@ void TableManager::select(string value, string campos)
             }
             data = newData;
         }
+        auto end = std::chrono::system_clock::now();
+
+        std::chrono::duration<float, std::milli> duration = end - start;
+        
         vector<string>fullTable;
         string charval = "row\t";
         if (SA.trim(campos) == "*") {
@@ -300,6 +338,7 @@ void TableManager::select(string value, string campos)
                 }
             }
             fullTable.push_back(charval);
+            
             print(charval, plomo);
             int i = 1;
             for (vector<string>camp : data) {
@@ -309,7 +348,7 @@ void TableManager::select(string value, string campos)
                 cout << endl;
                 i++;
             }
-
+            cout << "ejecutado en:" << duration.count() << "ms" << endl;
         }
         else {
             vector<string> camps = SA.split(campos, ",");
@@ -327,13 +366,22 @@ void TableManager::select(string value, string campos)
                     charval += tb.colums[c].nombre + "\t";
                 }
             }
+            auto end = std::chrono::system_clock::now();
+
+            std::chrono::duration<float, std::milli> duration = end - start;
+            
             print(charval + "\t", plomo);
             for (vector<string>camp : data) {
                 for (int c : indices) cout << camp[c] << "\t";
                 cout << endl;
             }
+            cout << "ejecutado en:" << duration.count() << "ms" << endl;
         }
     }
+    else {
+       print("tabla no existe",rojo);
+    }
+    
 }
 
 void TableManager::updateValue(string value)
@@ -418,12 +466,22 @@ void TableManager::indexTable(string value)
         vector<vector<string>>data = getall(tablename);
         int colnumcond = getIndexColum(tb.colums, atributo);
         string datatype = tb.colums[colnumcond].tipo;
-        ArbolAVL<string> arbol(Indice(indexname, tb.colums[colnumcond].nombre, datatype, tablename, colnumcond));
-        for (int i = 0; i < data.size(); i++) {
-            arbol.insert(SA.trim(data[i][colnumcond]), i);
+        if (!indexexist(indexname)) {
+            Indice i(indexname, tb.colums[colnumcond].nombre, datatype, tablename, colnumcond);
+            saveIndex(i);
+            indices.push_back(i);
+            ArbolAVL<string> arbol(i);
+            for (int i = 0; i < data.size(); i++) {
+                arbol.insert(SA.trim(data[i][colnumcond]), i);
+            }
+            arbol.save();
+            indxTrees.push_back(arbol);
+            print("indice \"" + indexname + "\" creado", verde);
         }
-        arbol.save();
-        indxTrees.push_back(arbol);
+        else {
+            print("el indice \"" + indexname + "\" ya existe", rojo);
+        }
+        
     }
 }
 
@@ -453,12 +511,13 @@ vector<int> TableManager::getbycol(Tabla tb, vector<vector<string>> datos, int i
     vector<int> coinciden;
     for (int j = 0; j < datos.size(); j++) {
         if (condicional == "=") {
-            if (SA.trim(datos[j][i]) == val)  coinciden.push_back(j);
+            string newval = SA.trim(datos[j][i]);
+            if (newval == val)  coinciden.push_back(j);
         }
         else if (condicional == "<") {
             string tipo = tb.colums[i].tipo;
             if (tipo == "int") {
-                int cond1 = stoi(datos[j][i]);
+                int cond1 = stoi(SA.trim(datos[j][i]));
                 int cond2 = stoi(val);
                 if (cond1 < cond2)  coinciden.push_back(j);
             }
@@ -474,7 +533,7 @@ vector<int> TableManager::getbycol(Tabla tb, vector<vector<string>> datos, int i
         else if (condicional == ">") {
             string tipo = tb.colums[i].tipo;
             if (tipo == "int") {
-                int cond1 = stoi(datos[j][i]);
+                int cond1 = stoi(SA.trim(datos[j][i]));
                 int cond2 = stoi(val);
                 if (cond1 > cond2)  coinciden.push_back(j);
             }

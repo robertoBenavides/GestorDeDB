@@ -21,6 +21,14 @@ struct ArbolAVL {
 	ArbolAVL(Indice indx) {
 		this->indx = indx;
 	}
+	void insertfromTxt(string linea) {
+		vector<string>data = SA.split(linea,"/");
+		string val = SA.trim(data[0]);
+		vector<string> lines = SA.split(String(data[1].begin() + 1, data[1].end() - 1));
+		for (string l : lines) {
+			insert(val,stoi(l));
+		}
+	}
 	bool find(T val, Nodo<T>**& p, stack<pair<Nodo<T>**, bool> >& pila) {
 		p = &raiz;
 		pila.push(make_pair(&raiz, 0));
@@ -248,23 +256,18 @@ struct ArbolAVL {
 			s.push(raiz);
 			while (!s.empty())
 			{
-				if (s.front() == nullptr) {
+				if (s.front()->estado == 0) {
+					s.front()->estado += 1;
+					if (s.front()->nodos[0])s.push(s.front()->nodos[0]);
+					if (s.front()->nodos[1])s.push(s.front()->nodos[1]);
+
+				}
+				else if (s.front()->estado == 1) {
+					f << s.front()->toString();
 					f << "\n";
 					s.pop();
 				}
-				else {
-					if (s.front()->estado == 0) {
-						s.front()->estado += 1;
-						s.push((s.front()->nodos[0]) ? s.front()->nodos[0] : nullptr);
-						s.push((s.front()->nodos[1]) ? s.front()->nodos[1] : nullptr);
-
-					}
-					else if (s.front()->estado == 1) {
-						f << s.front()->toString();
-						f << "\n";
-						s.pop();
-					}
-				}
+				
 				
 			}
 			f.close();

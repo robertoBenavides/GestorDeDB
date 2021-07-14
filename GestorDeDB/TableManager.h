@@ -1,6 +1,7 @@
 #pragma once
 #include <iostream>
 #include <fstream>
+#include <chrono>
 #include <Windows.h>
 #include "StringAdapter.h"
 #include "Tabla.h"
@@ -37,7 +38,8 @@ struct TableManager
     //index methods
     void indexTable(string);
     void getArbol(string, ArbolAVL<string>*);
-
+    bool indexexist(string);
+    void saveIndex(Indice);
 
     //helper functions
     vector<vector<string>> getall(string tablename);
