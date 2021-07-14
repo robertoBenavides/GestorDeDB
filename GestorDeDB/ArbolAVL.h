@@ -24,7 +24,7 @@ struct ArbolAVL {
 	void insertfromTxt(string linea) {
 		vector<string>data = SA.split(linea,"/");
 		string val = SA.trim(data[0]);
-		vector<string> lines = SA.split(String(data[1].begin() + 1, data[1].end() - 1));
+		vector<string> lines = SA.split(string(data[1].begin() + 1, data[1].end() - 1));
 		for (string l : lines) {
 			insert(val,stoi(l));
 		}
@@ -58,7 +58,7 @@ struct ArbolAVL {
 		return *p;
 	}
 	bool insert(T val,int nlinea) {
-
+		maxline = (nlinea > maxline) ? nlinea : maxline;
 		Nodo<T>** p;
 		stack< pair< Nodo<T>**, bool> > pila;
 
@@ -71,7 +71,7 @@ struct ArbolAVL {
 		if (pila.size() > 1) {
 			balanceo(pila);
 		}
-		maxline = (nlinea > maxline) ?nlinea :maxline ;
+		
 
 
 		cantnodos++;

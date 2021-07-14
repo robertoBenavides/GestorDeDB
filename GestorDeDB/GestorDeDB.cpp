@@ -108,7 +108,7 @@ void run() {
 
 int main()
 {
-    //insertMasivo2(30000, "Estudiante_30000");
+    //insertMasivo2(30000, "Estudiante_30000_idx");
     bool running = true;
     while (running) {
         run();

@@ -47,15 +47,18 @@ TableManager::TableManager()
     for (Indice i : indices) {
         ifstream arbolmyfile(i.nombre+".txt");
         string arbolline;
-        if (indxmyfile.is_open())
+        ArbolAVL<string> tree(i);
+        if (arbolmyfile.is_open())
         {
-            while (getline(indxmyfile, indxline))
+            while (getline(arbolmyfile, arbolline))
             {
-                vector<string> valores = SA.split(arbolline, ",");
-                indices.push_back(Indice(valores[0], valores[1], valores[2], valores[3], stoi(valores[4])));
+                
+                tree.insertfromTxt(arbolline);
             }
-            indxmyfile.close();
+            arbolmyfile.close();
         }
+        indxTrees.push_back(tree);
+        char a = 'd';
     }
 
 }
@@ -467,10 +470,10 @@ void TableManager::indexTable(string value)
         int colnumcond = getIndexColum(tb.colums, atributo);
         string datatype = tb.colums[colnumcond].tipo;
         if (!indexexist(indexname)) {
-            Indice i(indexname, tb.colums[colnumcond].nombre, datatype, tablename, colnumcond);
-            saveIndex(i);
-            indices.push_back(i);
-            ArbolAVL<string> arbol(i);
+            Indice in(indexname, tb.colums[colnumcond].nombre, datatype, tablename, colnumcond);
+            saveIndex(in);
+            indices.push_back(in);
+            ArbolAVL<string> arbol(in);
             for (int i = 0; i < data.size(); i++) {
                 arbol.insert(SA.trim(data[i][colnumcond]), i);
             }
