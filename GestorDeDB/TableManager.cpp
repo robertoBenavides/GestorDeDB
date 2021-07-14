@@ -69,7 +69,7 @@ void TableManager::rewriteInfo(vector<string> finald, string tablename)
 void TableManager::createTable(string data)
 {
     {
-        string tablename = string(data.begin() + 1, data.begin() + data.find("("));
+        string tablename =SA.trim(string(data.begin() + 1, data.begin() + data.find("(")));
         Tabla* tb;
         if (!tableexist(tablename, tb)) {
             string args = string(data.begin() + data.find("(") + 1, data.begin() + data.find(")"));
@@ -210,7 +210,6 @@ void TableManager::select(string value, string campos)
         tablename = SA.trim(string(value.begin(), value.begin() + pos));
         value.erase(value.begin(), value.begin() + pos + 5);
         string condicion = SA.trim(string(value.begin(), value.end() - 1));
-
 
         if (condicion.find("=") != string::npos) {
             condicional = "=";

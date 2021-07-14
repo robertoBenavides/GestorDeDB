@@ -139,19 +139,23 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="ArbolAVL.cpp" />
     <ClCompile Include="Casteador.cpp" />
     <ClCompile Include="Col.cpp" />
     <ClCompile Include="Fecha.cpp" />
     <ClCompile Include="GestorDeDB.cpp" />
+    <ClCompile Include="Nodo.cpp" />
     <ClCompile Include="StringAdapter.cpp" />
     <ClCompile Include="Tabla.cpp" />
     <ClCompile Include="TableManager.cpp" />
     <ClCompile Include="VAlidatorsintax.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="ArbolAVL.h" />
     <ClInclude Include="Casteador.h" />
     <ClInclude Include="Col.h" />
     <ClInclude Include="Fecha.h" />
+    <ClInclude Include="Nodo.h" />
     <ClInclude Include="StringAdapter.h" />
     <ClInclude Include="Tabla.h" />
     <ClInclude Include="TableManager.h" />

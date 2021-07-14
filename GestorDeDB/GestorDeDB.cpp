@@ -1,6 +1,3 @@
-// GestorDeDB.cpp : Este archivo contiene la función "main". La ejecución del programa comienza y termina ahí.
-//
-
 #include <iostream>
 #include <fstream>
 #include <string>
@@ -108,16 +105,18 @@ void run() {
         }
 
     }
-    /* if (!executed) {
+    if (!executed) {
          TM.print("comando incorrecto",rojo);
      }
 }
-
+#include "Indice.h"
+#include "ArbolAVL.h"
+#include "Nodo.h"
 int main()
 {
-    cout<<VS.validate("update    persona    set id = 3,nombre=asdasdf where     id     =     1   ;");
-    /*bool running = true;
+    bool running = true;
     while (running) {
-        run(); 
+        run();
     }
+   
 }
