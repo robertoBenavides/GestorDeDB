@@ -22,6 +22,8 @@ struct TableManager
     vector<Indice> indices;
     vector<ArbolAVL<string>> indxTrees;
     
+
+
     TableManager();
     
     bool tableexist(string, Tabla*& );
@@ -45,6 +47,7 @@ struct TableManager
     vector<vector<string>> getall(string tablename);
     int getIndexColum(vector<Col> colums, string data);
     vector<int> getbycol(Tabla tb, vector<vector<string>>datos, int i, string val, string condicional);
+    vector<int> findInAVL(string val, int pos);
 
     //print setting
     void print(string, int);

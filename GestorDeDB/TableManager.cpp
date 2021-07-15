@@ -260,14 +260,51 @@ void TableManager::deleteValue(string value)
             Tabla tb = *t;
             vector<vector<string>> data = getall(tablename);
             int colnumcond = getIndexColum(tb.colums, SA.trim(cond[0]));
-            vector<int> indexdata = getbycol(tb, data, colnumcond, SA.trim(cond[1]), condicional);
+            vector<int> indexdata;
+            bool tablaindexada = false;
+            bool colindexada = false;
+            int pos = 0;
+            for (ArbolAVL<string> e : indxTrees) {
+                if (e.indx.tablename == tablename) {
+                    tablaindexada = true;
+                    if (e.indx.colnumber == colnumcond) {
+                        colindexada = true;
+                    }
+                    break;
+                }
+                pos += 1;
+            }
+
+            if (tablaindexada && colindexada) {
+                indexdata = findInAVL(SA.trim(cond[1]), pos);
+                indxTrees[pos].remove(SA.trim(cond[1]));
+                indxTrees[pos].save();
+            }
+            else {
+                indexdata = getbycol(tb, data, colnumcond, SA.trim(cond[1]), condicional);
+            }
+
+
 
             if (indexdata.size()) {
                 for (int i = indexdata.size() - 1; i >= 0; i--) {
+                    if (tablaindexada) {
+                        string borrar = SA.trim(data[indexdata[i]][indxTrees[pos].indx.colnumber]);
+                        vector<int> punteros = indxTrees[pos].buscar(borrar);
+                        if (punteros.size() == 1) {
+                            indxTrees[pos].remove(borrar);
+                        }
+                        else {
+                            indxTrees[pos].borrarPuntero(borrar, indexdata[i]);
+                        }
+                    }
                     data.erase(data.begin() + indexdata[i]);
                 }
 
                 vector<string>finald = SA.toFlatString(data);
+                if (tablaindexada) {
+                    indxTrees[pos].save();
+                }
                 rewriteInfo(finald, tablename);
                 print("se elimino correctamente", verde);
             }
@@ -316,7 +353,26 @@ void TableManager::select(string value, string campos)
 
         if (pos != string::npos) {
             int colnumcond = getIndexColum(tb.colums, SA.trim(cond[0]));
-            vector<int> indexdata = getbycol(tb, data, colnumcond, SA.trim(cond[1]), condicional);
+            vector<int> indexdata;
+            bool indexado = false;
+            int pos=0;
+            for (ArbolAVL<string> e : indxTrees) {
+                if (e.indx.tablename == tablename && e.indx.colnumber == colnumcond) {
+                    indexado = true;
+                    break;
+                }
+                pos += 1;
+            }
+            if (condicional != "=") {
+                indexado = false;
+            }
+
+            if (indexado) {
+                indexdata = findInAVL(SA.trim(cond[1]), pos);
+            }
+            else {
+                indexdata = getbycol(tb, data, colnumcond, SA.trim(cond[1]), condicional);
+            }
             vector<vector<string>> newData;
             for (int i : indexdata) {
                 newData.push_back(data[i]);
@@ -551,6 +607,11 @@ vector<int> TableManager::getbycol(Tabla tb, vector<vector<string>> datos, int i
         }
     }
     return coinciden;
+}
+
+vector<int> TableManager::findInAVL(string val, int pos)
+{
+    return indxTrees[pos].buscar(val);
 }
 
 void TableManager::print(string msg, int color)

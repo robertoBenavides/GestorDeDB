@@ -1,6 +1,7 @@
 #include "Nodo.h"
 #include <stack>
 #include <vector>
+#include <chrono>
 #include <string>
 #include <iostream>
 #include <queue>
@@ -18,17 +19,21 @@ struct ArbolAVL {
 
 	Nodo<T>* raiz = 0;
 	int cantnodos = 0;
+	ArbolAVL() {
+	};
 	ArbolAVL(Indice indx) {
 		this->indx = indx;
 	}
+	
 	void insertfromTxt(string linea) {
 		vector<string>data = SA.split(linea,"/");
 		string val = SA.trim(data[0]);
-		vector<string> lines = SA.split(string(data[1].begin() + 1, data[1].end() - 1));
+		vector<string> lines = SA.split(string(data[1].begin() + 1, data[1].end() - 1),",");
 		for (string l : lines) {
 			insert(val,stoi(l));
 		}
 	}
+	
 	bool find(T val, Nodo<T>**& p, stack<pair<Nodo<T>**, bool> >& pila) {
 		p = &raiz;
 		pila.push(make_pair(&raiz, 0));
@@ -57,6 +62,70 @@ struct ArbolAVL {
 		
 		return *p;
 	}
+
+	vector<int> buscar(T dat) {
+		Nodo<T>** p;
+		if (indx.tipo == "int") {
+			if (buscarInt(stoi(dat),p)) {
+				return (*p)->lineas;
+			}
+			else {
+				vector<int> vacia;
+				return vacia;
+			}
+		}
+		else {
+			if (buscarString(dat, p)) {
+				return (*p)->lineas;
+			}
+			else {
+				vector<int> vacia;
+				return vacia;
+			}
+		}
+	}
+
+	bool buscarString(T dat, Nodo<T>**& p)
+	{
+		p = &raiz;
+		for (p; *p && (*p)->val != dat; p = &((*p)->nodos[dat > (*p)->val]));
+		return *p;
+	}
+
+	bool buscarInt(int dat, Nodo<T>**& p)
+	{
+		p = &raiz;
+		for (p; *p && stoi((*p)->val) != dat; p = &((*p)->nodos[dat > stoi((*p)->val)]));
+		return *p;
+	}
+
+	void borrarPuntero(T dat, int puntero)
+	{
+		Nodo<T>** p;
+
+		if (indx.tipo == "int") {
+			buscarInt(stoi(dat), p);
+		}
+		else {
+			buscarString(dat, p);
+		}
+		int i = 0;
+		if (*p) {
+			for (int j : (*p)->lineas) {
+				if (j == puntero) {
+					break;
+				}
+				i++;
+			}
+			((*p)->lineas).erase(((*p)->lineas).begin() + i);
+		}
+	}
+
+	void menorRigth(Nodo<T>**& p) {
+		for (p = &((*p)->nodos[0]); (*p)->nodos[0]; p = &((*p)->nodos[0]));
+
+	}
+	
 	bool insert(T val,int nlinea) {
 		maxline = (nlinea > maxline) ? nlinea : maxline;
 		Nodo<T>** p;
@@ -77,6 +146,7 @@ struct ArbolAVL {
 		cantnodos++;
 		return 1;
 	}
+	
 	void balanceo(stack< pair< Nodo<T>**, bool> > pila) {
 		pair <Nodo<T>**, bool> h, p;
 		int val = 0;
@@ -131,6 +201,7 @@ struct ArbolAVL {
 			}
 		}
 	}
+	
 	bool remove(T val) {
 		stack< pair< Nodo<T>**, bool> > pila;
 		Nodo<T>** p;
@@ -148,6 +219,7 @@ struct ArbolAVL {
 		return 1;
 
 	}
+	
 	void recorrerNiveles(stack<Nodo<T>*> s) {
 		int niveles = 0, alt = niveles;
 		while (!s.empty())
@@ -238,6 +310,7 @@ struct ArbolAVL {
 		cout << '\n';
 
 	}
+	
 	void print() {
 		if (!raiz) {
 			cout << "el arbol esta vacio" << endl;
@@ -249,6 +322,7 @@ struct ArbolAVL {
 
 		cout << endl;
 	}
+	
 	void save() {
 		ofstream f(indx.nombre + ".txt");
 		if (f.is_open()) {
@@ -263,6 +337,7 @@ struct ArbolAVL {
 
 				}
 				else if (s.front()->estado == 1) {
+					s.front()->estado = 0;
 					f << s.front()->toString();
 					f << "\n";
 					s.pop();
@@ -273,6 +348,31 @@ struct ArbolAVL {
 			f.close();
 		}
 		else cout << "Error de apertura de archivo." << endl;
+	}
+	
+	void print_hijos(Nodo<T>* p)
+	{
+		if (p)
+		{
+			print_hijos((p)->nodos[0]);
+			if ((p)->nodos[0])
+			{
+				cout << "\t" << (p)->val << " -> " << (p)->nodos[0]->val << ";" << endl;
+			}
+			if ((p)->nodos[1])
+			{
+				cout << "\t" << (p)->val << " -> " << (p)->nodos[1]->val << ";" << endl;
+			}
+			print_hijos(p->nodos[1]);
+		}
+	}
+	
+	void hijos()
+	{
+		Nodo<T>* p = raiz;
+		cout << "digraph G {" << endl;
+		print_hijos(p);
+		cout << "}" << endl;
 	}
 };
 

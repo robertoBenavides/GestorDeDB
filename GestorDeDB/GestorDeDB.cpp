@@ -108,7 +108,9 @@ void run() {
 
 int main()
 {
-    //insertMasivo2(30000, "Estudiante_30000_idx");
+    //insertMasivo2(30000, "Estudiante_30000");
+    //TM.indxTrees[1].hijos();
+    //vector<int> xd = TM.indxTrees[1].buscar("18");
     bool running = true;
     while (running) {
         run();
