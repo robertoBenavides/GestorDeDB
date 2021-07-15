@@ -1,6 +1,7 @@
 #include "Nodo.h"
 #include <stack>
 #include <vector>
+#include <chrono>
 #include <string>
 #include <iostream>
 #include <queue>
@@ -18,12 +19,9 @@ struct ArbolAVL {
 
 	Nodo<T>* raiz = 0;
 	int cantnodos = 0;
-	ArbolAVL() {
-	}
 	ArbolAVL(Indice indx) {
 		this->indx = indx;
 	}
-
 	void insertfromTxt(string linea) {
 		vector<string>data = SA.split(linea,"/");
 		string val = SA.trim(data[0]);
@@ -32,6 +30,7 @@ struct ArbolAVL {
 			insert(val,stoi(l));
 		}
 	}
+	
 	bool find(T val, Nodo<T>**& p, stack<pair<Nodo<T>**, bool> >& pila) {
 		p = &raiz;
 		pila.push(make_pair(&raiz, 0));
@@ -60,6 +59,70 @@ struct ArbolAVL {
 		
 		return *p;
 	}
+
+	vector<int> buscar(T dat) {
+		Nodo<T>** p;
+		if (indx.tipo == "int") {
+			if (buscarInt(stoi(dat),p)) {
+				return (*p)->lineas;
+			}
+			else {
+				vector<int> vacia;
+				return vacia;
+			}
+		}
+		else {
+			if (buscarString(dat, p)) {
+				return (*p)->lineas;
+			}
+			else {
+				vector<int> vacia;
+				return vacia;
+			}
+		}
+	}
+
+	bool buscarString(T dat, Nodo<T>**& p)
+	{
+		p = &raiz;
+		for (p; *p && (*p)->val != dat; p = &((*p)->nodos[dat > (*p)->val]));
+		return *p;
+	}
+
+	bool buscarInt(int dat, Nodo<T>**& p)
+	{
+		p = &raiz;
+		for (p; *p && stoi((*p)->val) != dat; p = &((*p)->nodos[dat > stoi((*p)->val)]));
+		return *p;
+	}
+
+	void borrarPuntero(T dat, int puntero)
+	{
+		Nodo<T>** p;
+
+		if (indx.tipo == "int") {
+			buscarInt(stoi(dat), p);
+		}
+		else {
+			buscarString(dat, p);
+		}
+		int i = 0;
+		if (*p) {
+			for (int j : (*p)->lineas) {
+				if (j == puntero) {
+					break;
+				}
+				i++;
+			}
+			((*p)->lineas).erase(((*p)->lineas).begin() + i);
+		}
+	}
+
+	void menorRigth(Nodo<T>**& p) {
+		for (p = &((*p)->nodos[0]); (*p)->nodos[0]; p = &((*p)->nodos[0]));
+
+	}
+	
 	bool insert(T val,int nlinea) {
 		maxline = (nlinea > maxline) ? nlinea : maxline;
 		Nodo<T>** p;
@@ -80,6 +143,7 @@ struct ArbolAVL {
 		cantnodos++;
 		return 1;
 	}
+	
 	void balanceo(stack< pair< Nodo<T>**, bool> > pila) {
 		pair <Nodo<T>**, bool> h, p;
 		int val = 0;
@@ -134,6 +198,7 @@ struct ArbolAVL {
 			}
 		}
 	}
+	
 	bool remove(T val) {
 		stack< pair< Nodo<T>**, bool> > pila;
 		Nodo<T>** p;
@@ -149,38 +214,6 @@ struct ArbolAVL {
 		*p = (*p)->nodos[(*p)->nodos[1] != 0];
 		delete t;
 		return 1;
-
-	}
-	bool remove(T val,int line) {
-		stack< pair< Nodo<T>**, bool> > pila;
-		Nodo<T>** p;
-		if (!find(val, p, pila)) return 0;
-		if ((*p)->lineas.size() == 1) {
-			if ((*p)->nodos[0] && (*p)->nodos[1]) {
-				Nodo<T>** q = p;
-				menorRigth(q);
-
-				(*p)->val = (*q)->val;
-				p = q;
-			}
-			Nodo<T>* t = *p;
-			*p = (*p)->nodos[(*p)->nodos[1] != 0];
-			delete t;
-			return 1;
-		}
-		else {
-			for (int i = (*p)->lineas.size()-1; i >=0 ;i--) {
-				if ((*p)->lineas[i] == line) {
-					(*p)->lineas.erase((*p)->lineas.begin() + i);
-					return 1;
-				}
-			}
-		}
-		
-		return 1;
-	}
-	void menorRigth(Nodo<T>**& p) {
-		for (p = &((*p)->nodos[0]); (*p)->nodos[0]; p = &((*p)->nodos[0]));
 
 	}
 	void recorrerNiveles(stack<Nodo<T>*> s) {
@@ -273,6 +306,7 @@ struct ArbolAVL {
 		cout << '\n';
 
 	}
+	
 	void print() {
 		if (!raiz) {
 			cout << "el arbol esta vacio" << endl;
@@ -284,6 +318,7 @@ struct ArbolAVL {
 
 		cout << endl;
 	}
+	
 	void save() {
 		ofstream f(indx.nombre + ".txt", ios::out);
 		if (f.is_open()) {
@@ -307,42 +342,6 @@ struct ArbolAVL {
 			f.close();
 		}
 		else cout << "Error de apertura de archivo." << endl;
-	}
-
-	vector<int> buscar(T dat) {
-		Nodo<T>** p;
-		if (indx.tipo == "int") {
-			if (buscarInt(stoi(dat), p)) {
-				return (*p)->lineas;
-			}
-			else {
-				vector<int> vacia;
-				return vacia;
-			}
-		}
-		else {
-			if (buscarString(dat, p)) {
-				return (*p)->lineas;
-			}
-			else {
-				vector<int> vacia;
-				return vacia;
-			}
-		}
-	}
-
-	bool buscarString(T dat, Nodo<T>**& p)
-	{
-		p = &raiz;
-		for (p; *p && (*p)->val != dat; p = &((*p)->nodos[dat > (*p)->val]));
-		return *p;
-	}
-
-	bool buscarInt(int dat, Nodo<T>**& p)
-	{
-		p = &raiz;
-		for (p; *p && stoi((*p)->val) != dat; p = &((*p)->nodos[dat > stoi((*p)->val)]));
-		return *p;
 	}
 };
 

@@ -269,6 +269,9 @@ void TableManager::deleteValue(string value)
                 }
 
                 vector<string>finald = SA.toFlatString(data);
+                if (tablaindexada) {
+                    indxTrees[pos].save();
+                }
                 rewriteInfo(finald, tablename);
                 print("se elimino correctamente", verde);
             }
@@ -603,6 +606,11 @@ vector<int> TableManager::getbycol(Tabla tb, vector<vector<string>> datos, int i
         }
     }
     return coinciden;
+}
+
+vector<int> TableManager::findInAVL(string val, int pos)
+{
+    return indxTrees[pos].buscar(val);
 }
 
 void TableManager::print(string msg, int color)
