@@ -22,8 +22,6 @@ struct TableManager
     vector<Indice> indices;
     vector<ArbolAVL<string>> indxTrees;
     
-
-
     TableManager();
     
     bool tableexist(string, Tabla*& );
