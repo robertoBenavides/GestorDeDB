@@ -18,13 +18,18 @@ struct ArbolAVL {
 
 	Nodo<T>* raiz = 0;
 	int cantnodos = 0;
+	ArbolAVL() {
+	}
 	ArbolAVL(Indice indx) {
 		this->indx = indx;
+	}
+	~ArbolAVL() {
+		if (changed) save();
 	}
 	void insertfromTxt(string linea) {
 		vector<string>data = SA.split(linea,"/");
 		string val = SA.trim(data[0]);
-		vector<string> lines = SA.split(string(data[1].begin() + 1, data[1].end() - 1));
+		vector<string> lines = SA.split(string(data[1].begin() + 1, data[1].end() - 1),",");
 		for (string l : lines) {
 			insert(val,stoi(l));
 		}
@@ -148,6 +153,38 @@ struct ArbolAVL {
 		return 1;
 
 	}
+	bool remove(T val,int line) {
+		stack< pair< Nodo<T>**, bool> > pila;
+		Nodo<T>** p;
+		if (!find(val, p, pila)) return 0;
+		if ((*p)->lineas.size() == 1) {
+			if ((*p)->nodos[0] && (*p)->nodos[1]) {
+				Nodo<T>** q = p;
+				menorRigth(q);
+
+				(*p)->val = (*q)->val;
+				p = q;
+			}
+			Nodo<T>* t = *p;
+			*p = (*p)->nodos[(*p)->nodos[1] != 0];
+			delete t;
+			return 1;
+		}
+		else {
+			for (int i = (*p)->lineas.size()-1; i >=0 ;i--) {
+				if ((*p)->lineas[i] == line) {
+					(*p)->lineas.erase((*p)->lineas.begin() + i);
+					return 1;
+				}
+			}
+		}
+		
+		return 1;
+	}
+	void menorRigth(Nodo<T>**& p) {
+		for (p = &((*p)->nodos[0]); (*p)->nodos[0]; p = &((*p)->nodos[0]));
+
+	}
 	void recorrerNiveles(stack<Nodo<T>*> s) {
 		int niveles = 0, alt = niveles;
 		while (!s.empty())
@@ -250,7 +287,7 @@ struct ArbolAVL {
 		cout << endl;
 	}
 	void save() {
-		ofstream f(indx.nombre + ".txt");
+		ofstream f(indx.nombre + ".txt", ios::out);
 		if (f.is_open()) {
 			queue<Nodo<T>*> s;
 			s.push(raiz);
@@ -263,12 +300,11 @@ struct ArbolAVL {
 
 				}
 				else if (s.front()->estado == 1) {
+					s.front()->estado = 0;
 					f << s.front()->toString();
 					f << "\n";
 					s.pop();
 				}
-				
-				
 			}
 			f.close();
 		}

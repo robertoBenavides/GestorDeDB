@@ -58,7 +58,6 @@ TableManager::TableManager()
             arbolmyfile.close();
         }
         indxTrees.push_back(tree);
-        char a = 'd';
     }
 
 }
@@ -176,9 +175,10 @@ void TableManager::insertValue(string val)
                 f << finalvalues;
                 f << "\n";
                 f.close();
+                print("se inserto correctamente", verde);
             }
             else cout << "Error de apertura de archivo." << endl;
-            //print("se inserto correctamente", verde);
+            
 
         }
 
@@ -188,21 +188,22 @@ void TableManager::insertValue(string val)
     }
 
     if (posidx != string::npos) {
-        ArbolAVL<string>* arbol = nullptr;
+        ArbolAVL<string>* arbol=nullptr;
         getArbol(tablename, arbol);
         if (arbol != nullptr) {
             string val = SA.split(finalvalues, ",")[(*arbol).indx.colnumber];
-            (*arbol).insert(val, (*arbol).maxline + 1);
+            (*arbol).insert(SA.trim(val), (*arbol).maxline + 1);
+            (*arbol).save();
         }
 
     }
 
 }
 
-void TableManager::getArbol(string tname, ArbolAVL<string>* ind) {
-    for (Indice i : indices) {
-        if (i.tablename == tname) {
-            *ind = i;
+void TableManager::getArbol(string tname, ArbolAVL<string>*& ind) {
+    for (ArbolAVL<string>& i : indxTrees) {
+        if (i.indx.tablename == tname) {
+            ind = &i;
             return;
         }
     }
@@ -241,7 +242,6 @@ void TableManager::deleteValue(string value)
         value.erase(value.begin(), value.begin() + pos + 5);
         string condicion = SA.trim(string(value.begin(), value.end() - 1));
 
-
         string condicional;
         if (condicion.find("=") != string::npos) {
             condicional = "=";
@@ -261,9 +261,10 @@ void TableManager::deleteValue(string value)
             vector<vector<string>> data = getall(tablename);
             int colnumcond = getIndexColum(tb.colums, SA.trim(cond[0]));
             vector<int> indexdata = getbycol(tb, data, colnumcond, SA.trim(cond[1]), condicional);
-
+            vector<vector<string>> deleted;
             if (indexdata.size()) {
                 for (int i = indexdata.size() - 1; i >= 0; i--) {
+                    deleted.insert(deleted.begin(),*(data.begin() + indexdata[i]));
                     data.erase(data.begin() + indexdata[i]);
                 }
 
@@ -274,11 +275,22 @@ void TableManager::deleteValue(string value)
             else {
                 print("dato(s) no encontrado(s)", rojo);
             }
+            if (tablename.find("_idx") != string::npos) {
+                ArbolAVL<string>* arbol = nullptr;
+                getArbol(tablename, arbol);
+                if (arbol != nullptr) {
+                    for (int i = indexdata.size() - 1; i >= 0; i--) {
+                        (*arbol).remove(SA.trim(deleted[i][(*arbol).indx.colnumber]), indexdata[i]);
+                    }
+                }
+                (*arbol).save();
+            }
 
         }
         else {
             print("la tabla \"" + tablename + "\" no existe", rojo);
         }
+        
 
 
     }
@@ -385,6 +397,31 @@ void TableManager::select(string value, string campos)
        print("tabla no existe",rojo);
     }
     
+}
+
+vector<vector<string>> TableManager::getfrontxtbyline(string tablename, vector<int>lines) {
+    vector<vector<string>> data;
+    string line;
+    ifstream myfile(tablename + ".txt");
+    if (myfile.is_open())
+    {
+        getline(myfile, line);
+        int linesize = line.size() + 2;
+        for (int a : lines) {
+            int spaces = a * linesize;
+            myfile.seekg(spaces);
+            getline(myfile, line);
+            data.push_back(SA.split(line, ","));
+        }
+
+        myfile.close();
+        return data;
+
+    }
+
+    else cout << "Unable to open file";
+    return vector<vector<string>>();
+
 }
 
 void TableManager::updateValue(string value)

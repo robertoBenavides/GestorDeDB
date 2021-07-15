@@ -7,8 +7,10 @@
 #include "Fecha.h"
 #include "StringAdapter.h"
 #include "TableManager.h"
+#include "ArbolAVL.h"
 
 using namespace std;
+
 StringAdapter SA;
 TableManager TM;
 
@@ -90,6 +92,7 @@ void run() {
     }
     if (ident == "delete") {
         TM.deleteValue(value);
+        executed = true;
     }
     if (ident == "select") {
         pos = value.find("from");
@@ -108,10 +111,8 @@ void run() {
 
 int main()
 {
-    //insertMasivo2(30000, "Estudiante_30000_idx");
     bool running = true;
     while (running) {
         run();
     }
-   
 }

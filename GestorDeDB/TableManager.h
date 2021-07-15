@@ -34,10 +34,16 @@ struct TableManager
     void updateValue(string);
     void deleteValue(string);
     void select(string, string);
+    //reading methods
+    vector<vector<string>> getfrontxtbyline(string, vector<int>);
+    
+
+
+
 
     //index methods
     void indexTable(string);
-    void getArbol(string, ArbolAVL<string>*);
+    void getArbol(string, ArbolAVL<string>*&);
     bool indexexist(string);
     void saveIndex(Indice);
 

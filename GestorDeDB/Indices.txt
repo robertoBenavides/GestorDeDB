@@ -1,1 +1,1 @@
-idx_30000,id_est,int,Estudiante_30000_idx,0
+idx_30000_edad,edad,int,Estudiante_30000_idx,3
