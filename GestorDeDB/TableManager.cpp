@@ -275,16 +275,15 @@ void TableManager::deleteValue(string value)
             else {
                 print("dato(s) no encontrado(s)", rojo);
             }
-            if (tablename.find("_idx") != string::npos) {
-                ArbolAVL<string>* arbol = nullptr;
-                getArbol(tablename, arbol);
-                if (arbol != nullptr) {
-                    for (int i = indexdata.size() - 1; i >= 0; i--) {
-                        (*arbol).remove(SA.trim(deleted[i][(*arbol).indx.colnumber]), indexdata[i]);
-                    }
+            
+            ArbolAVL<string>* arbol = nullptr;
+            getArbol(tablename, arbol);
+            if (arbol != nullptr) {
+                for (int i = indexdata.size() - 1; i >= 0; i--) {
+                    (*arbol).remove(SA.trim(deleted[i][(*arbol).indx.colnumber]), indexdata[i]);
                 }
-                (*arbol).save();
             }
+            (*arbol).save();
 
         }
         else {
@@ -299,7 +298,7 @@ void TableManager::deleteValue(string value)
 void TableManager::select(string value, string campos)
 {
     auto start = std::chrono::system_clock::now();
-   
+
     string tablename = SA.trim(string(value.begin(), value.end() - 1));
     int pos = value.find("where");
     string condicional;
@@ -328,7 +327,26 @@ void TableManager::select(string value, string campos)
 
         if (pos != string::npos) {
             int colnumcond = getIndexColum(tb.colums, SA.trim(cond[0]));
-            vector<int> indexdata = getbycol(tb, data, colnumcond, SA.trim(cond[1]), condicional);
+            vector<int> indexdata;
+            bool indexado = false;
+            int pos = 0;
+            for (ArbolAVL<string> e : indxTrees) {
+                if (e.indx.tablename == tablename && e.indx.colnumber == colnumcond) {
+                    indexado = true;
+                    break;
+                }
+                pos += 1;
+            }
+            if (condicional != "=") {
+                indexado = false;
+            }
+
+            if (indexado) {
+                indexdata = findInAVL(SA.trim(cond[1]), pos);
+            }
+            else {
+                indexdata = getbycol(tb, data, colnumcond, SA.trim(cond[1]), condicional);
+            }
             vector<vector<string>> newData;
             for (int i : indexdata) {
                 newData.push_back(data[i]);
@@ -338,7 +356,7 @@ void TableManager::select(string value, string campos)
         auto end = std::chrono::system_clock::now();
 
         std::chrono::duration<float, std::milli> duration = end - start;
-        
+
         vector<string>fullTable;
         string charval = "row\t";
         if (SA.trim(campos) == "*") {
@@ -353,7 +371,7 @@ void TableManager::select(string value, string campos)
                 }
             }
             fullTable.push_back(charval);
-            
+
             print(charval, plomo);
             int i = 1;
             for (vector<string>camp : data) {
@@ -384,7 +402,7 @@ void TableManager::select(string value, string campos)
             auto end = std::chrono::system_clock::now();
 
             std::chrono::duration<float, std::milli> duration = end - start;
-            
+
             print(charval + "\t", plomo);
             for (vector<string>camp : data) {
                 for (int c : indices) cout << camp[c] << "\t";
@@ -394,9 +412,9 @@ void TableManager::select(string value, string campos)
         }
     }
     else {
-       print("tabla no existe",rojo);
+        print("tabla no existe", rojo);
     }
-    
+
 }
 
 vector<vector<string>> TableManager::getfrontxtbyline(string tablename, vector<int>lines) {
@@ -597,4 +615,9 @@ void TableManager::print(string msg, int color)
     SetConsoleTextAttribute(hConsole, color);
     cout << msg << endl;
     SetConsoleTextAttribute(hConsole, 15);
+}
+
+vector<int> TableManager::findInAVL(string val, int pos)
+{
+    return indxTrees[pos].buscar(val);
 }

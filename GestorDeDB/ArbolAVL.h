@@ -23,9 +23,7 @@ struct ArbolAVL {
 	ArbolAVL(Indice indx) {
 		this->indx = indx;
 	}
-	~ArbolAVL() {
-		if (changed) save();
-	}
+
 	void insertfromTxt(string linea) {
 		vector<string>data = SA.split(linea,"/");
 		string val = SA.trim(data[0]);
@@ -309,6 +307,42 @@ struct ArbolAVL {
 			f.close();
 		}
 		else cout << "Error de apertura de archivo." << endl;
+	}
+
+	vector<int> buscar(T dat) {
+		Nodo<T>** p;
+		if (indx.tipo == "int") {
+			if (buscarInt(stoi(dat), p)) {
+				return (*p)->lineas;
+			}
+			else {
+				vector<int> vacia;
+				return vacia;
+			}
+		}
+		else {
+			if (buscarString(dat, p)) {
+				return (*p)->lineas;
+			}
+			else {
+				vector<int> vacia;
+				return vacia;
+			}
+		}
+	}
+
+	bool buscarString(T dat, Nodo<T>**& p)
+	{
+		p = &raiz;
+		for (p; *p && (*p)->val != dat; p = &((*p)->nodos[dat > (*p)->val]));
+		return *p;
+	}
+
+	bool buscarInt(int dat, Nodo<T>**& p)
+	{
+		p = &raiz;
+		for (p; *p && stoi((*p)->val) != dat; p = &((*p)->nodos[dat > stoi((*p)->val)]));
+		return *p;
 	}
 };
 

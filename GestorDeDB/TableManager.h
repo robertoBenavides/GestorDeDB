@@ -34,6 +34,7 @@ struct TableManager
     void updateValue(string);
     void deleteValue(string);
     void select(string, string);
+
     //reading methods
     vector<vector<string>> getfrontxtbyline(string, vector<int>);
     
@@ -51,7 +52,7 @@ struct TableManager
     vector<vector<string>> getall(string tablename);
     int getIndexColum(vector<Col> colums, string data);
     vector<int> getbycol(Tabla tb, vector<vector<string>>datos, int i, string val, string condicional);
-
+    vector<int> findInAVL(string val, int pos);
     //print setting
     void print(string, int);
 };
