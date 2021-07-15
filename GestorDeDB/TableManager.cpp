@@ -289,9 +289,6 @@ void TableManager::deleteValue(string value)
         else {
             print("la tabla \"" + tablename + "\" no existe", rojo);
         }
-        
-
-
     }
 }
 
@@ -324,7 +321,7 @@ void TableManager::select(string value, string campos)
     if (tableexist(tablename, t)) {
         Tabla tb = *t;
         vector<vector<string>>data = getall(tablename);
-
+        start = std::chrono::system_clock::now();
         if (pos != string::npos) {
             int colnumcond = getIndexColum(tb.colums, SA.trim(cond[0]));
             vector<int> indexdata;
